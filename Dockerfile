@@ -1,16 +1,3 @@
-# https://docs.nvidia.com/cuda/cuda-installation-guide-linux/
-# https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&target_distro=Ubuntu&target_version=1804&target_type=deblocal
-# https://marmelab.com/blog/2018/03/21/using-nvidia-gpu-within-docker-container.html
-# https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&target_distro=Ubuntu&target_version=1804&target_type=runfilelocal
-# https://gist.github.com/zhanwenchen/e520767a409325d9961072f666815bb8#install-nvidia-graphics-driver-via-apt-get
-# https://gist.github.com/dte/8954e405590a360614dcc6acdb7baa74
-# https://github.com/jupyterhub/zero-to-jupyterhub-k8s/issues/994 # TENSORFLOW-GPU
-# https://www.tensorflow.org/install/gpu
-# https://medium.com/data-science-bootcamp/anaconda-miniconda-cheatsheet-for-data-scientists-2c1be12f56db
-# https://heartbeat.fritz.ai/top-7-libraries-and-packages-of-the-year-for-data-science-and-ai-python-r-6b7cca2bf000
-# https://jakevdp.github.io/blog/2017/12/05/installing-python-packages-from-jupyter/
-# https://medium.com/@balaprasannav2009/install-tensorflow-pytorch-in-ubuntu-18-04-lts-with-cuda-9-0-for-nvidia-1080-ti-9e45eca99573
-
 # Use the latest image from Jupyter without Tensorflow as
 # we will install Tensorflow with GPU support ourselves.
 ARG BASE_CONTAINER=jupyter/scipy-notebook:latest
@@ -36,8 +23,6 @@ RUN mkdir /root/.ssh
 
 # Start the SSH server
 RUN /usr/sbin/sshd -D &
-
-## RUN service ssh restart
 
 # Install stuff for NVidia GPU (CUDA)
 RUN apt-get install -y gnupg
@@ -85,7 +70,10 @@ ARG NB_PASS=12345
 RUN echo "$NB_USER:$NB_PASS"
 RUN echo "$NB_USER:$NB_PASS" | chpasswd
 
-# Run the following as the user
+# Restart SSH service
+RUN service ssh restart
+
+# Run the following as the NB_USER user
 USER $NB_USER
 
 # Install Tensorflow with GPU support and Keras
@@ -122,6 +110,6 @@ RUN fix-permissions /home/$NB_USER
 # Change workdir back
 WORKDIR $HOME
 
-# Change user back to jovyan to prevent running stuff as root
+# Change user back to NB_USER to prevent running stuff as root
 USER $NB_USER
 
