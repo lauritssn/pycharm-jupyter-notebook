@@ -22,7 +22,7 @@ RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
 RUN mkdir /root/.ssh
 
 # Start the SSH server
-RUN /usr/sbin/sshd -D &
+# RUN /usr/sbin/sshd -D &
 
 # Install stuff for NVidia GPU (CUDA)
 RUN apt-get install -y gnupg
